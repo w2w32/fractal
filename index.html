@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+<title>Fractal Maker</title>
+<script type="text/javascript">
+var can,ctx;
+var custom=false;
+var symmetric=false;
+var xarray;
+var yarray;
+var a=3;
+var square;
+function init(){
+can=document.getElementById("can0");
+ctx=can.getContext("2d");
+buildsquare();
+makeboxes(a,a);
+updatefloat();
+}
+function draw(){
+ctx.clearRect(0,0,can.width,can.height);
+a=parseInt(document.getElementById("input1").value);
+
+if(!custom){
+xarray=[];
+yarray=[];
+if(symmetric){
+var len=Math.random()*a*a/2;
+}else{
+var len=Math.random()*a*a;
+}
+for(var i=0;i<len;i++){
+xarray.push(Math.floor(Math.random()*a));
+yarray.push(Math.floor(Math.random()*a));
+}
+}
+for(var j=0;j<can.height;j++){
+for(var i=0;i<can.width;i++){
+    if(filled(i,j)){
+    ctx.fillRect(i,j,1,1);
+    }
+}
+}
+}
+
+
+function filled(x,y){
+while(x>0||y>0){
+for(var k=0;k<xarray.length;k++){
+if(!square[y%a][x%a]){return false}
+}
+
+x=Math.floor(x/a);
+y=Math.floor(y/a);
+}
+return true;
+}
+function buildsquare(){
+	square=new Array(a);
+	for(var i=0;i<a;i++){
+	square[i]=[];
+	for(var j=0;j<a;j++){
+	square[i][j]=false;
+	}
+	}
+}
+
+function makeboxes(w,h){
+var res=""
+	for(var i=0;i<h;i++){
+	res+="<tr>";
+	for(var j=0;j<w;j++){
+	res+="<td id="+i+"-"+j+" onclick=\"togglebox("+i+","+j+")\"></td>";
+	}
+	res+="</tr>\n"
+	}
+document.getElementById("float").innerHTML=res;
+}
+
+function togglebox(i,j){
+if(a!==parseInt(document.getElementById("input1").value)||a!==square.length){
+a=parseInt(document.getElementById("input1").value);
+buildsquare();
+makeboxes(a,a);
+}
+if(square[i][j]){
+document.getElementById(""+i+"-"+j).style.backgroundColor="#fff";
+square[i][j]=false;
+}else{
+document.getElementById(""+i+"-"+j).style.backgroundColor="#000";
+square[i][j]=true;
+}
+}
+function updatefloat(){
+if(a!==parseInt(document.getElementById("input1").value)||a!==square.length){
+a=parseInt(document.getElementById("input1").value);
+buildsquare();
+makeboxes(a,a);
+}
+document.getElementById("float").hidden=!document.getElementById("check").checked;
+}
+</script>
+<style>
+td{
+width:10px;
+height:10px;
+border:1px solid gray;
+}
+#float{
+background-color:#fff;
+z-index:1;
+position:absolute;
+padding:1px;
+border-collapse: collapse;
+}
+canvas{
+background-color:#fff;
+}
+input{
+margin-right:20px;
+}
+</style>
+</head>
+<body bgcolor="#eee" onload="init()">
+<span>pattern size<span><input type=number id="input1" value="3">show pattern editor<input type="checkbox" id="check" onchange="updatefloat()"><br>
+<table id="float"></table>
+<canvas height="600" width="1000" id="can0" onclick="draw()"></canvas>
+
+</body>
+</html>
